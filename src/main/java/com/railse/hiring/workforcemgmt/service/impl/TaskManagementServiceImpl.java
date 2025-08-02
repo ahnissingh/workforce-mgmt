@@ -3,6 +3,7 @@ package com.railse.hiring.workforcemgmt.service.impl;
 import com.railse.hiring.workforcemgmt.common.exception.ResourceNotFoundException;
 import com.railse.hiring.workforcemgmt.dto.*;
 import com.railse.hiring.workforcemgmt.mapper.ITaskManagementMapper;
+import com.railse.hiring.workforcemgmt.model.Activity;
 import com.railse.hiring.workforcemgmt.model.TaskManagement;
 import com.railse.hiring.workforcemgmt.model.enums.Priority;
 import com.railse.hiring.workforcemgmt.model.enums.Task;
@@ -200,6 +201,7 @@ public class TaskManagementServiceImpl implements TaskManagementService {
                 .map(taskMapper::modelToDto)
                 .collect(Collectors.toList());
     }
+
     @Override
     public List<TaskManagementDto> fetchTasksByDateV4(TaskFetchByDateRequest request) {
         List<TaskManagement> tasks = taskRepository.findByAssigneeIdIn(request.getAssigneeIds());
@@ -220,12 +222,14 @@ public class TaskManagementServiceImpl implements TaskManagementService {
                 .map(taskMapper::modelToDto)
                 .collect(Collectors.toList());
     }
+
     @Override
     public TaskManagementDto updateTaskPriority(UpdateTaskPriorityRequest request) {
         TaskManagement task = taskRepository.findById(request.taskId())
                 .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
         task.setPriority(request.newPriority());
         task.setDescription("Priority changed to " + request.newPriority());
+        task.getActivityHistory().add(new Activity("Priority changed to " + request.newPriority(), System.currentTimeMillis()));
         taskRepository.save(task);
         return taskMapper.modelToDto(task);
     }
@@ -239,7 +243,6 @@ public class TaskManagementServiceImpl implements TaskManagementService {
                 .map(taskMapper::modelToDto)
                 .collect(Collectors.toList());
     }
-
 
 
 }
