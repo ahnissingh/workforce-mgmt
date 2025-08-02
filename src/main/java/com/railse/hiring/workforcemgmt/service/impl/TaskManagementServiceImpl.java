@@ -200,6 +200,26 @@ public class TaskManagementServiceImpl implements TaskManagementService {
                 .map(taskMapper::modelToDto)
                 .collect(Collectors.toList());
     }
+    @Override
+    public List<TaskManagementDto> fetchTasksByDateV4(TaskFetchByDateRequest request) {
+        List<TaskManagement> tasks = taskRepository.findByAssigneeIdIn(request.getAssigneeIds());
+
+        var start = request.getStartDate();
+        var end = request.getEndDate();
+
+        return tasks.stream()
+                .filter(task -> task.getStatus() != TaskStatus.CANCELLED)
+                // CASE 1: deadline is within requested date range
+
+                // CASE 2: task is older than start_date but still open
+                .filter(task ->
+                        (task.getTaskDeadlineTime() >= start && task.getTaskDeadlineTime() <= end)
+                                || (task.getTaskDeadlineTime() < start &&
+                                (task.getStatus() == TaskStatus.ASSIGNED || task.getStatus() == TaskStatus.STARTED))
+                )
+                .map(taskMapper::modelToDto)
+                .collect(Collectors.toList());
+    }
 
 
 }

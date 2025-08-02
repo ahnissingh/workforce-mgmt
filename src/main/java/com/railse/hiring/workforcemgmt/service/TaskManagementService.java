@@ -40,4 +40,5 @@ public interface TaskManagementService {
     List<TaskManagementDto> fetchTasksByDateV3(TaskFetchByDateRequest request);
 
 
+    List<TaskManagementDto> fetchTasksByDateV4(TaskFetchByDateRequest request);
 }

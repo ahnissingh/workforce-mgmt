@@ -68,5 +68,11 @@ public class TaskManagementController {
         return new Response<>(taskManagementService.getByReference(referenceId));
     }
 
+    //Feature1 as per document
+    @PostMapping("/fetch-by-date/v4")
+    public Response<List<TaskManagementDto>> fetchTasksByDateV4(@RequestBody TaskFetchByDateRequest request) {
+        return new Response<>(taskManagementService.fetchTasksByDateV4(request));
+    }
+
 
 }
