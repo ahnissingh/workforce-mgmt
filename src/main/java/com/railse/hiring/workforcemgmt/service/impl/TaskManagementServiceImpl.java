@@ -1,11 +1,10 @@
 package com.railse.hiring.workforcemgmt.service.impl;
 
-import
-        com.railse.hiring.workforcemgmt.common.exception.ResourceNotFoundException
-        ;
+import com.railse.hiring.workforcemgmt.common.exception.ResourceNotFoundException;
 import com.railse.hiring.workforcemgmt.dto.*;
 import com.railse.hiring.workforcemgmt.mapper.ITaskManagementMapper;
 import com.railse.hiring.workforcemgmt.model.TaskManagement;
+import com.railse.hiring.workforcemgmt.model.enums.Priority;
 import com.railse.hiring.workforcemgmt.model.enums.Task;
 import com.railse.hiring.workforcemgmt.model.enums.TaskStatus;
 import com.railse.hiring.workforcemgmt.repository.TaskRepository;
@@ -73,8 +72,9 @@ public class TaskManagementServiceImpl implements TaskManagementService {
         return taskMapper.modelListToDtoList(updatedTasks);
     }
 
+    //    Bug1 code
     @Override
-    public String assignByReference(AssignByReferenceRequest request) {
+    public String assignByReferenceV1(AssignByReferenceRequest request) {
         List<Task> applicableTasks =
                 Task.getTasksByReferenceType(request.getReferenceType());
         List<TaskManagement> existingTasks =
@@ -84,7 +84,7 @@ public class TaskManagementServiceImpl implements TaskManagementService {
             List<TaskManagement> tasksOfType = existingTasks.stream()
                     .filter(t -> t.getTask() == taskType && t.getStatus()
                             != TaskStatus.COMPLETED)
-                    .collect(Collectors.toList());
+                    .toList();
 // BUG #1 is here. It should assign one and cancel the rest.
 // Instead, it reassigns ALL of them.
             if (!tasksOfType.isEmpty()) {
@@ -93,7 +93,8 @@ public class TaskManagementServiceImpl implements TaskManagementService {
                     taskRepository.save(taskToUpdate);
                 }
             } else {
-// Create a new task if none exist
+
+                //Create a new task if none exist
                 TaskManagement newTask = new TaskManagement();
                 newTask.setReferenceId(request.getReferenceId());
                 newTask.setReferenceType(request.getReferenceType());
@@ -108,20 +109,97 @@ public class TaskManagementServiceImpl implements TaskManagementService {
     }
 
     @Override
+    public String assignByReferenceV2(AssignByReferenceRequest request) {
+        List<Task> applicableTasks = Task.getTasksByReferenceType(request.getReferenceType());
+
+        List<TaskManagement> existingTasks =
+                taskRepository.findByReferenceIdAndReferenceType(request.getReferenceId(),
+                        request.getReferenceType());
+
+        for (Task taskType : applicableTasks) {
+            // Cancelling all existing tasks of this type that are not already completed/cancelled
+            for (TaskManagement existing : existingTasks) {
+                if (existing.getTask() == taskType &&
+                        existing.getStatus() != TaskStatus.COMPLETED &&
+                        existing.getStatus() != TaskStatus.CANCELLED) {
+
+                    existing.setStatus(TaskStatus.CANCELLED);
+                    existing.setDescription("Cancelled due to reassignment");
+                    taskRepository.save(existing);
+                }
+            }
+
+            //creating  a fresh task for the new assignee
+            TaskManagement newTask = new TaskManagement();
+            newTask.setReferenceId(request.getReferenceId());
+            newTask.setReferenceType(request.getReferenceType());
+            newTask.setTask(taskType);
+            newTask.setAssigneeId(request.getAssigneeId());
+            newTask.setStatus(TaskStatus.ASSIGNED);
+            newTask.setPriority(Priority.MEDIUM); // Default, or add to request if needed
+            newTask.setDescription("Newly assigned via assign-by-ref");
+            newTask.setTaskDeadlineTime(System.currentTimeMillis() + 86400000); // 1 day
+
+            taskRepository.save(newTask);
+        }
+
+        return "Tasks reassigned successfully for reference " + request.getReferenceId();
+    }
+
+    //Bug2 code
+    @Override
     public List<TaskManagementDto> fetchTasksByDate(TaskFetchByDateRequest
                                                             request) {
         List<TaskManagement> tasks =
                 taskRepository.findByAssigneeIdIn(request.getAssigneeIds());
-// BUG #2 is here. It should filter out CANCELLED tasks butdoesn't.
+        // BUG #2 is here. It should filter out CANCELLED tasks butdoesn't.
         List<TaskManagement> filteredTasks = tasks.stream()
                 .filter(task -> {
-// This logic is incomplete for the assignment.
-// It should check against startDate and endDate.
-// For now, it just returns all tasks for the assignees.
+
+                    // This logic is incomplete for the assignment.
+                    // It should check against startDate and endDate.
+                    // For now, it just returns all tasks for the assignees.
                     return true;
                 })
                 .collect(Collectors.toList());
         return taskMapper.modelListToDtoList(filteredTasks);
     }
+
+    //Fixed bug 2
+    @Override
+    public List<TaskManagementDto> fetchTasksByDateV2(TaskFetchByDateRequest
+                                                              request) {
+        List<TaskManagement> tasks =
+                taskRepository.findByAssigneeIdIn(request.getAssigneeIds());
+        List<TaskManagement> filteredTasks = tasks.stream()
+                .filter(task -> task.getStatus() != TaskStatus.CANCELLED
+                        && task.getTaskDeadlineTime() >= request.getStartDate()
+                        && task.getTaskDeadlineTime() <= request.getEndDate())
+                .toList();//this is better to return as it is unmodifiable , we are just mapping and returning the list
+        return taskMapper.modelListToDtoList(filteredTasks);
+    }
+
+    //New Method just for showing bug 1
+    @Override
+    public List<TaskManagementDto> getByReference(Long referenceId) {
+        List<TaskManagement> all = taskRepository.findAll();
+        List<TaskManagement> filtered = all.stream()
+                .filter(t -> t.getReferenceId().equals(referenceId))
+                .collect(Collectors.toList());
+        return taskMapper.modelListToDtoList(filtered);
+    }
+
+    @Override
+    public List<TaskManagementDto> fetchTasksByDateV3(TaskFetchByDateRequest request) {
+        List<TaskManagement> tasks = taskRepository.findByAssigneeIdIn(request.getAssigneeIds());
+
+        return tasks.stream()
+                .filter(task -> task.getStatus() != TaskStatus.CANCELLED) //  fix  is here
+                .filter(task -> task.getTaskDeadlineTime() >= request.getStartDate()
+                        && task.getTaskDeadlineTime() <= request.getEndDate())
+                .map(taskMapper::modelToDto)
+                .collect(Collectors.toList());
+    }
+
+
 }
-//

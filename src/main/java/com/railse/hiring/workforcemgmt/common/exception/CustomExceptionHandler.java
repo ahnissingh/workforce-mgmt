@@ -1,8 +1,7 @@
 package com.railse.hiring.workforcemgmt.common.exception;
 
 import com.railse.hiring.workforcemgmt.common.model.response.Response;
-import
-        com.railse.hiring.workforcemgmt.common.model.response.ResponseStatus;
+import com.railse.hiring.workforcemgmt.common.model.response.ResponseStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
