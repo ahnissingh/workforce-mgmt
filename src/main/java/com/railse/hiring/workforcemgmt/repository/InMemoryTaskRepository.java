@@ -41,17 +41,17 @@ public class InMemoryTaskRepository implements TaskRepository {
     private void createSeedTask(Long refId, ReferenceType refType, Task
             task, Long assigneeId, TaskStatus status, Priority priority) {
         long newId = idCounter.incrementAndGet();
-        TaskManagement newTask = new TaskManagement();
-        newTask.setId(newId);
-        newTask.setReferenceId(refId);
-        newTask.setReferenceType(refType);
-        newTask.setTask(task);
-        newTask.setAssigneeId(assigneeId);
-        newTask.setStatus(status);
-        newTask.setPriority(priority);
-        newTask.setDescription("This is a seed task.");
-        newTask.setTaskDeadlineTime(System.currentTimeMillis() + 86400000);
-// 1 day from now
+        TaskManagement newTask = TaskManagement.builder()
+                .id(newId)
+                .referenceId(refId)
+                .referenceType(refType)
+                .task(task)
+                .assigneeId(assigneeId)
+                .status(status)
+                .priority(priority)
+                .description("This is a seed task.")
+                .taskDeadlineTime(System.currentTimeMillis() + 86400000)// 1 day from now
+                .build();
         taskStore.put(newId, newTask);
     }
 

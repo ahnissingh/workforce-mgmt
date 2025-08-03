@@ -42,15 +42,16 @@ public class TaskManagementServiceImpl implements TaskManagementService {
         List<TaskManagement> createdTasks = new ArrayList<>();
         for (TaskCreateRequest.RequestItem item :
                 createRequest.getRequests()) {
-            TaskManagement newTask = new TaskManagement();
-            newTask.setReferenceId(item.getReferenceId());
-            newTask.setReferenceType(item.getReferenceType());
-            newTask.setTask(item.getTask());
-            newTask.setAssigneeId(item.getAssigneeId());
-            newTask.setPriority(item.getPriority());
-            newTask.setTaskDeadlineTime(item.getTaskDeadlineTime());
-            newTask.setStatus(TaskStatus.ASSIGNED);
-            newTask.setDescription("New task created.");
+            var newTask = TaskManagement.builder()
+                    .referenceId(item.getReferenceId())
+                    .referenceType(item.getReferenceType())
+                    .task(item.getTask())
+                    .assigneeId(item.getAssigneeId())
+                    .priority(item.getPriority())
+                    .taskDeadlineTime(item.getTaskDeadlineTime())
+                    .status(TaskStatus.ASSIGNED)
+                    .description("New task created.")
+                    .build();
             createdTasks.add(taskRepository.save(newTask));
         }
         return taskMapper.modelListToDtoList(createdTasks);
@@ -98,12 +99,13 @@ public class TaskManagementServiceImpl implements TaskManagementService {
             } else {
 
                 //Create a new task if none exist
-                TaskManagement newTask = new TaskManagement();
-                newTask.setReferenceId(request.getReferenceId());
-                newTask.setReferenceType(request.getReferenceType());
-                newTask.setTask(taskType);
-                newTask.setAssigneeId(request.getAssigneeId());
-                newTask.setStatus(TaskStatus.ASSIGNED);
+                var newTask = TaskManagement.builder()
+                        .referenceId(request.getReferenceId())
+                        .referenceType(request.getReferenceType())
+                        .task(taskType)
+                        .assigneeId(request.getAssigneeId())
+                        .status(TaskStatus.ASSIGNED)
+                        .build();
                 taskRepository.save(newTask);
             }
         }
@@ -133,15 +135,16 @@ public class TaskManagementServiceImpl implements TaskManagementService {
             }
 
             //creating  a fresh task for the new assignee
-            TaskManagement newTask = new TaskManagement();
-            newTask.setReferenceId(request.getReferenceId());
-            newTask.setReferenceType(request.getReferenceType());
-            newTask.setTask(taskType);
-            newTask.setAssigneeId(request.getAssigneeId());
-            newTask.setStatus(TaskStatus.ASSIGNED);
-            newTask.setPriority(Priority.MEDIUM); // Default, or add to request if needed
-            newTask.setDescription("Newly assigned via assign-by-ref");
-            newTask.setTaskDeadlineTime(System.currentTimeMillis() + 86400000); // 1 day
+            var newTask = TaskManagement.builder()
+                    .referenceId(request.getReferenceId())
+                    .referenceType(request.getReferenceType())
+                    .task(taskType)
+                    .assigneeId(request.getAssigneeId())
+                    .status(TaskStatus.ASSIGNED)
+                    .priority(Priority.MEDIUM)
+                    .description("Newly assigned via assign-by-ref")
+                    .taskDeadlineTime(System.currentTimeMillis() + 86400000) //1day
+                    .build();
 
             taskRepository.save(newTask);
         }
