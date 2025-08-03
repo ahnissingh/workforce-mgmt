@@ -33,6 +33,7 @@ public interface TaskManagementService {
     List<TaskManagementDto> fetchTasksByDateV4(TaskFetchByDateRequest request);
 
     TaskManagementDto updateTaskPriority(UpdateTaskPriorityRequest request);
+
     List<TaskManagementDto> getTasksByPriority(Priority priority);
 
     TaskManagementDto addCommentToTask(AddCommentRequest request);
