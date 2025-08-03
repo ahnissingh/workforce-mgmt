@@ -1,13 +1,9 @@
-*
-
-# Submission
 
 ### 1. Link to your Git Repository Branch
 
-[Your Git Branch URL Here]
+[https://github.com/ahnissingh/workforce-mgmt](https://github.com/ahnissingh/workforce-mgmt)
 
 ### 2. Link to your Video Demonstration
 
-(Please ensure the link is publicly accessible)
-[Your Google Drive, Loom, or YouTube Link Here]
-*/
+[https://drive.google.com/file/d/100gvYS_jykJZ8RxjeMB69xZD7-uaVvTH/view?usp=sharing](https://drive.google.com/file/d/100gvYS_jykJZ8RxjeMB69xZD7-uaVvTH/view?usp=sharing)
+
