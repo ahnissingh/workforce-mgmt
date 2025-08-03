@@ -4,6 +4,7 @@ import com.railse.hiring.workforcemgmt.common.exception.ResourceNotFoundExceptio
 import com.railse.hiring.workforcemgmt.dto.*;
 import com.railse.hiring.workforcemgmt.mapper.ITaskManagementMapper;
 import com.railse.hiring.workforcemgmt.model.Activity;
+import com.railse.hiring.workforcemgmt.model.Comment;
 import com.railse.hiring.workforcemgmt.model.TaskManagement;
 import com.railse.hiring.workforcemgmt.model.enums.Priority;
 import com.railse.hiring.workforcemgmt.model.enums.Task;
@@ -13,6 +14,7 @@ import com.railse.hiring.workforcemgmt.service.TaskManagementService;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -242,6 +244,31 @@ public class TaskManagementServiceImpl implements TaskManagementService {
                 .filter(task -> task.getPriority() == priority)
                 .map(taskMapper::modelToDto)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public TaskManagementDto addCommentToTask(AddCommentRequest request) {
+        TaskManagement task = taskRepository.findById(request.taskId())
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+
+        long now = System.currentTimeMillis();
+
+        task.getComments().add(new Comment(request.message(), now));
+        task.getActivityHistory().add(new Activity("User added a comment", now));
+
+        taskRepository.save(task);
+        return taskMapper.modelToDto(task);
+    }
+
+    @Override
+    public TaskManagementDto getTaskDetails(Long taskId) {
+        TaskManagement task = taskRepository.findById(taskId)
+                .orElseThrow(() -> new ResourceNotFoundException("Task not found"));
+        // Sort both lists by timestamp
+        task.getActivityHistory().sort(Comparator.comparingLong(Activity::getTimestamp));
+        task.getComments().sort(Comparator.comparingLong(Comment::getTimestamp));
+
+        return taskMapper.modelToDto(task);
     }
 
 

@@ -6,24 +6,13 @@ import com.railse.hiring.workforcemgmt.model.enums.Priority;
 import java.util.List;
 
 public interface TaskManagementService {
+
     List<TaskManagementDto> createTasks(TaskCreateRequest request);
 
     List<TaskManagementDto> updateTasks(UpdateTaskRequest request);
 
     String assignByReferenceV1(AssignByReferenceRequest request);
 
-    //                TaskManagement newTask = new TaskManagement();
-//                newTask.setReferenceId(request.getReferenceId());
-//                newTask.setReferenceType(request.getReferenceType());
-//                newTask.setTask(taskType);
-//                newTask.setAssigneeId(request.getAssigneeId());
-//                newTask.setStatus(TaskStatus.ASSIGNED);
-//                taskRepository.save(newTask);
-//            }
-//        }
-//        return "Tasks assigned successfully for reference " +
-//                request.getReferenceId();
-//    }
     String assignByReferenceV2(AssignByReferenceRequest request);
 
     List<TaskManagementDto> fetchTasksByDate(TaskFetchByDateRequest
@@ -45,4 +34,9 @@ public interface TaskManagementService {
 
     TaskManagementDto updateTaskPriority(UpdateTaskPriorityRequest request);
     List<TaskManagementDto> getTasksByPriority(Priority priority);
+
+    TaskManagementDto addCommentToTask(AddCommentRequest request);
+
+    TaskManagementDto getTaskDetails(Long taskId);
+
 }

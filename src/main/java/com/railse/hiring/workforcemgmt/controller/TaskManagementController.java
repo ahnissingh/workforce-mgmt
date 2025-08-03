@@ -74,6 +74,7 @@ public class TaskManagementController {
     public Response<List<TaskManagementDto>> fetchTasksByDateV4(@RequestBody TaskFetchByDateRequest request) {
         return new Response<>(taskManagementService.fetchTasksByDateV4(request));
     }
+
     @PostMapping("/priority/update")
     public Response<TaskManagementDto> updatePriority(@RequestBody UpdateTaskPriorityRequest request) {
         return new Response<>(taskManagementService.updateTaskPriority(request));
@@ -82,6 +83,17 @@ public class TaskManagementController {
     @GetMapping("/priority/{priority}")
     public Response<List<TaskManagementDto>> getByPriority(@PathVariable Priority priority) {
         return new Response<>(taskManagementService.getTasksByPriority(priority));
+    }
+
+    //Feature 3
+    @PostMapping("/comment")
+    public Response<TaskManagementDto> addComment(@RequestBody AddCommentRequest request) {
+        return new Response<>(taskManagementService.addCommentToTask(request));
+    }
+
+    @GetMapping("/{id}/details")
+    public Response<TaskManagementDto> getTaskDetails(@PathVariable Long id) {
+        return new Response<>(taskManagementService.getTaskDetails(id));
     }
 
 
