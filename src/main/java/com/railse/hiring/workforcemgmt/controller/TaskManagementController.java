@@ -26,7 +26,7 @@ public class TaskManagementController {
         return new Response<>(taskManagementService.createTasks(request));
     }
 
-    @PostMapping("/update")
+    @PutMapping("/update")
     public Response<List<TaskManagementDto>> updateTasks(@RequestBody
                                                          UpdateTaskRequest request) {
         return new Response<>(taskManagementService.updateTasks(request));
@@ -81,7 +81,7 @@ public class TaskManagementController {
         return new Response<>(taskManagementService.fetchTasksByDateV4(request));
     }
 
-    @PostMapping("/priority/update")
+    @PatchMapping("/priority/update")
     public Response<TaskManagementDto> updatePriority(@RequestBody UpdateTaskPriorityRequest request) {
         return new Response<>(taskManagementService.updateTaskPriority(request));
     }
