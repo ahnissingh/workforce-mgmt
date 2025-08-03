@@ -63,10 +63,10 @@ public class TaskManagementServiceImpl implements TaskManagementService {
         List<TaskManagement> updatedTasks = new ArrayList<>();
         for (UpdateTaskRequest.RequestItem item :
                 updateRequest.getRequests()) {
-            TaskManagement task = taskRepository.findById(item.getTaskId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Task not found with id:" + item.getTaskId()));
-            if (item.getTaskStatus() != null) {
-                task.setStatus(item.getTaskStatus());
+            TaskManagement task = taskRepository.findById(item.getTaskid())
+                    .orElseThrow(() -> new ResourceNotFoundException("Task not found with id:" + item.getTaskid()));
+            if (item.getTaskstatus() != null) {
+                task.setStatus(item.getTaskstatus());
             }
             if (item.getDescription() != null) {
                 task.setDescription(item.getDescription());

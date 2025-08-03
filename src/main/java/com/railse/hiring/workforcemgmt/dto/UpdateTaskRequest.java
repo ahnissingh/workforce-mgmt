@@ -15,8 +15,8 @@ public class UpdateTaskRequest {
     @Data
     @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
     public static class RequestItem {
-        private Long taskId;
-        private TaskStatus taskStatus;
+        private Long taskid;
+        private TaskStatus taskstatus;
         private String description;
     }
 }

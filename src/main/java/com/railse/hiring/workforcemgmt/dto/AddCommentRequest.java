@@ -1,11 +1,11 @@
 package com.railse.hiring.workforcemgmt.dto;
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public record AddCommentRequest(
+        @JsonProperty("task_id")
         Long taskId,
+        @JsonProperty("message")
         String message
 ) {
 }
